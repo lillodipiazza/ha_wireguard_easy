@@ -1,0 +1,61 @@
+## wg-easy add-on for Home Assistant
+##
+## Wraps the official wg-easy image (v15) and integrates it with
+## Home Assistant: Ingress web UI, persistent config and unattended
+## first-run setup driven by the add-on options.
+##
+name: wg-easy
+version: "1.0.0"
+slug: wg_easy
+description: WireGuard VPN + Web UI (wg-easy) for Home Assistant
+url: https://github.com/wg-easy/wg-easy
+arch:
+  - amd64
+  - aarch64
+init: false
+startup: services
+boot: manual
+
+# WireGuard must create its interface and NAT rules on the host network so
+# that VPN clients can reach the whole home network. The web UI is exposed
+# through Home Assistant Ingress.
+host_network: true
+ingress: true
+ingress_port: 0
+ingress_stream: true
+panel_icon: mdi:security-network
+panel_title: wg-easy
+
+# Required capabilities, mirroring the official Home Assistant WireGuard add-on.
+privileged:
+  - NET_ADMIN
+  - SYS_MODULE
+kernel_modules: true
+apparmor: false
+
+# These options are applied ONLY on first run (wg-easy "unattended setup").
+# After that, all configuration lives in the persistent database and is
+# managed from the wg-easy web UI.
+options:
+  host: ""
+  port: 51820
+  username: admin
+  password: ""
+  address: "10.8.0.0/24"
+  ipv6_address: "fdcc:ad94:bacf:61a3::/64"
+  dns: "1.1.1.1, 1.0.0.1"
+  allowed_ips: "0.0.0.0/0, ::/0"
+  disable_ipv6: false
+  insecure: false
+
+schema:
+  host: str
+  port: port
+  username: str
+  password: password
+  address: str
+  ipv6_address: str
+  dns: str
+  allowed_ips: str
+  disable_ipv6: bool
+  insecure: bool

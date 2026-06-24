@@ -1,0 +1,50 @@
+---
+configuration:
+  host:
+    name: Endpoint pubblico (host)
+    description: >-
+      Indirizzo IP pubblico o nome dominio a cui i client WireGuard si
+      collegano (es. vpn.esempio.it o 203.0.113.10). Impostato solo al
+      primo avvio, poi modificabile dalla UI wg-easy.
+  port:
+    name: Porta UDP WireGuard
+    description: >-
+      Porta UDP su cui WireGuard è in ascolto (default 51820).
+      Configura il port-forwarding del router verso questo numero.
+  username:
+    name: Nome utente admin
+    description: >-
+      Utente amministratore creato al primo avvio.
+  password:
+    name: Password admin
+    description: >-
+      Password dell'utente amministratore (usata solo al primo avvio).
+      Scegline una robusta.
+  address:
+    name: CIDR IPv4
+    description: >-
+      Rete IPv4 assegnata ai client VPN (es. 10.8.0.0/24).
+  ipv6_address:
+    name: CIDR IPv6
+    description: >-
+      Rete IPv6 assegnata ai client VPN. Deve essere valorizzato insieme
+      al CIDR IPv4 (es. fdcc:ad94:bacf:61a3::/64).
+  dns:
+    name: DNS
+    description: >-
+      Server DNS predefiniti per i client, separati da virgola
+      (es. 1.1.1.1, 1.0.0.1).
+  allowed_ips:
+    name: Allowed IPs
+    description: >-
+      Reti instradate attraverso la VPN (es. 0.0.0.0/0, ::/0 per il
+      tunnel completo).
+  disable_ipv6:
+    name: Disabilita IPv6
+    description: >-
+      Disabilita il supporto IPv6 (interfaccia e regole firewall).
+  insecure:
+    name: Consenti HTTP
+    description: >-
+      Permetti l'accesso alla UI tramite HTTP invece di HTTPS
+      (in genere non necessario con Ingress).
