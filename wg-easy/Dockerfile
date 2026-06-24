@@ -12,6 +12,21 @@ FROM ghcr.io/wg-easy/wg-easy:${WG_EASY_VERSION}
 # jq is used by the entrypoint to parse /data/options.json.
 RUN apk add --no-cache jq
 
+# Home Assistant OS ships a modern nftables-only kernel (Linux 6.x): it has
+# NO legacy `ip_tables` module. The upstream wg-easy image forcefully selects
+# `iptables-legacy`, which then crashes WireGuard startup with:
+#   modprobe: FATAL: Module ip_tables not found in directory /lib/modules/...
+#
+# Alpine's `iptables` package already symlinks `iptables -> xtables-nft-multi`
+# (nft backend) by default; wg-easy overrides that via update-alternatives to
+# legacy. We restore the nft symlinks directly so iptables talks to the in-kernel
+# `nf_tables` subsystem (always present on HA OS). This mirrors Alpine's
+# intended default and matches the upstream "Podman + nftables" guidance.
+RUN for b in iptables iptables-restore iptables-save \
+             ip6tables ip6tables-restore ip6tables-save; do \
+        ln -sf /usr/sbin/xtables-nft-multi "/usr/sbin/${b}"; \
+    done
+
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 

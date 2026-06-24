@@ -114,7 +114,23 @@ log " Allowed IPs        : ${OPT_ALLOWED_IPS}"
 log "---------------------------------------------------"
 
 # -----------------------------------------------------------------------------
-# 5. Launch wg-easy (original upstream command)
+# 5. Enable IP forwarding (required for VPN clients to reach LAN/internet).
+#    HA OS usually already sets this, but some setups reset it. Best effort:
+#    the writes may fail on read-only /proc, which is non-fatal.
+# -----------------------------------------------------------------------------
+for s in \
+  "net.ipv4.ip_forward" \
+  "net.ipv6.conf.all.forwarding" \
+  "net.ipv6.conf.default.forwarding"; do
+  if sysctl -w "${s}=1" >/dev/null 2>&1; then
+    log "sysctl ${s}=1 OK"
+  else
+    log "sysctl ${s} not settable (already on or read-only) - ignoring."
+  fi
+done
+
+# -----------------------------------------------------------------------------
+# 6. Launch wg-easy (original upstream command)
 # -----------------------------------------------------------------------------
 cd /app
 log "Starting wg-easy..."

@@ -5,7 +5,7 @@
 ## first-run setup driven by the add-on options.
 ##
 name: wg-easy
-version: "1.0.0"
+version: "1.0.1"
 slug: wg_easy
 description: WireGuard VPN + Web UI (wg-easy) for Home Assistant
 url: https://github.com/wg-easy/wg-easy
