@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.2
+
+- **Fix: Home Assistant Ingress now works.** The Supervisor does not pass the
+  Ingress port to the add-on container, so a dynamic `ingress_port: 0` cannot
+  work. Switched to a **fixed `ingress_port: 51821`** and make wg-easy listen
+  on exactly that port. This resolves the "app seems to not be ready" popup
+  when opening the UI from the sidebar.
+
 ## 1.0.1
 
 - **Fix: switch to `iptables-nft` backend.** Home Assistant OS uses a modern

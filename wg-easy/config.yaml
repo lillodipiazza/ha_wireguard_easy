@@ -5,7 +5,7 @@
 ## first-run setup driven by the add-on options.
 ##
 name: wg-easy
-version: "1.0.1"
+version: "1.0.2"
 slug: wg_easy
 description: WireGuard VPN + Web UI (wg-easy) for Home Assistant
 url: https://github.com/wg-easy/wg-easy
@@ -21,7 +21,11 @@ boot: manual
 # through Home Assistant Ingress.
 host_network: true
 ingress: true
-ingress_port: 0
+# Fixed Ingress port. MUST stay in sync with the PORT set in entrypoint.sh.
+# Do NOT set this to 0 (dynamic): the Supervisor does not pass the chosen port
+# to the container, so the add-on would never know which port to listen on.
+# 51821 is wg-easy's default UI port and avoids collisions with other add-ons.
+ingress_port: 51821
 ingress_stream: true
 panel_icon: mdi:security-network
 panel_title: wg-easy

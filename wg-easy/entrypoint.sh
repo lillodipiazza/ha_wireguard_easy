@@ -72,15 +72,18 @@ OPT_DISABLE_IPV6="$(read_optb '.disable_ipv6' 'false')"
 OPT_INSECURE="$(read_optb '.insecure'     'false')"
 
 # -----------------------------------------------------------------------------
-# 3. Web UI port -> prefer Home Assistant Ingress
+# 3. Web UI port -> Home Assistant Ingress
+#
+#    HA Supervisor proxies Ingress traffic to  <gateway>:<ingress_port>.
+#    IMPORTANT: the Supervisor does NOT pass the Ingress port to the container
+#    as an env var, so the add-on cannot use a dynamic (ingress_port: 0).
+#    The listening port below MUST equal the fixed `ingress_port` declared in
+#    config.yaml (51821). We still honor a supervisor-injected INGRESS_PORT if
+#    a future Supervisor version provides one.
 # -----------------------------------------------------------------------------
-if [ -n "${INGRESS_PORT:-}" ]; then
-  export PORT="${INGRESS_PORT}"
-  log "Ingress enabled -> Web UI on port ${INGRESS_PORT}."
-else
-  export PORT="${PORT:-51821}"
-  log "Direct access -> Web UI on port ${PORT}."
-fi
+HA_INGRESS_PORT="51821"
+export PORT="${INGRESS_PORT:-${HA_INGRESS_PORT}}"
+log "Web UI listening on port ${PORT} (HA Ingress)."
 
 export INSECURE="${OPT_INSECURE}"
 export DISABLE_IPV6="${OPT_DISABLE_IPV6}"
