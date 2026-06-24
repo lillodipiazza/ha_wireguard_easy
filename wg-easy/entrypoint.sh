@@ -62,6 +62,7 @@ read_optb() {
 
 OPT_HOST="$(read_opt  '.host'         '""')"
 OPT_PORT="$(read_opt  '.port'         '51820')"
+OPT_WEBUI_PORT="$(read_opt  '.webui_port'   '51821')"
 OPT_USERNAME="$(read_opt  '.username'     '"admin"')"
 OPT_PASSWORD="$(read_opt  '.password'     '""')"
 OPT_IPV4_CIDR="$(read_opt  '.address'      '"10.8.0.0/24"')"
@@ -69,22 +70,21 @@ OPT_IPV6_CIDR="$(read_opt  '.ipv6_address' '"fdcc:ad94:bacf:61a3::/64"')"
 OPT_DNS="$(read_opt  '.dns'          '"1.1.1.1, 1.0.0.1"')"
 OPT_ALLOWED_IPS="$(read_opt  '.allowed_ips'  '"0.0.0.0/0, ::/0"')"
 OPT_DISABLE_IPV6="$(read_optb '.disable_ipv6' 'false')"
-OPT_INSECURE="$(read_optb '.insecure'     'false')"
+OPT_INSECURE="$(read_optb '.insecure'     'true')"
 
 # -----------------------------------------------------------------------------
-# 3. Web UI port -> Home Assistant Ingress
+# 3. Web UI port
 #
-#    HA Supervisor proxies Ingress traffic to  <gateway>:<ingress_port>.
-#    IMPORTANT: the Supervisor does NOT pass the Ingress port to the container
-#    as an env var, so the add-on cannot use a dynamic (ingress_port: 0).
-#    The listening port below MUST equal the fixed `ingress_port` declared in
-#    config.yaml (51821). We still honor a supervisor-injected INGRESS_PORT if
-#    a future Supervisor version provides one.
+#    wg-easy is a SPA that cannot run behind HA Ingress (assets use absolute
+#    root paths -> 404). We expose the UI directly on a TCP port of the host.
+#    With host_network on, listening on 0.0.0.0:<webui_port> makes it reachable
+#    at http://<HA_IP>:<webui_port> (or behind your own HTTPS reverse proxy).
 # -----------------------------------------------------------------------------
-HA_INGRESS_PORT="51821"
-export PORT="${INGRESS_PORT:-${HA_INGRESS_PORT}}"
-log "Web UI listening on port ${PORT} (HA Ingress)."
+export PORT="${OPT_WEBUI_PORT}"
 
+# INSECURE=true allows the login cookie over plain HTTP (needed for direct
+# http://<HA_IP>:<port> access). Set insecure=false ONLY when the UI is served
+# behind an HTTPS reverse proxy.
 export INSECURE="${OPT_INSECURE}"
 export DISABLE_IPV6="${OPT_DISABLE_IPV6}"
 
@@ -109,11 +109,13 @@ fi
 
 log "---------------------------------------------------"
 log " WireGuard UDP port : ${OPT_PORT}  (host network)"
+log " Web UI (HTTP)      : http://<HA_IP>:${OPT_WEBUI_PORT}"
 log " Public endpoint    : ${OPT_HOST:-<not set>}"
 log " Admin user         : ${OPT_USERNAME}"
 log " IPv4 / IPv6 CIDR   : ${OPT_IPV4_CIDR} / ${OPT_IPV6_CIDR}"
 log " DNS                : ${OPT_DNS}"
 log " Allowed IPs        : ${OPT_ALLOWED_IPS}"
+log " Insecure (HTTP)    : ${OPT_INSECURE}"
 log "---------------------------------------------------"
 
 # -----------------------------------------------------------------------------

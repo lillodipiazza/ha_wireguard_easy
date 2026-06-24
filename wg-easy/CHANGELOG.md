@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.1.0
+
+- **Breaking change: removed Home Assistant Ingress.** wg-easy is a SPA that
+  references all of its assets with absolute root paths, so it cannot operate
+  behind HA Ingress (every asset returns 404). The web UI is now exposed
+  directly on a TCP port of the host.
+- New option `webui_port` (default `51821`) — the TCP port for the wg-easy web
+  UI. Reach it at `http://<HA_IP>:<webui_port>` or behind your own HTTPS
+  reverse proxy (e.g. nginx with a subdomain).
+- Default `insecure` is now `true` so the login cookie works over plain HTTP for
+  direct local access. Set it to `false` when serving the UI behind HTTPS.
+- Removed `ingress`, `ingress_port`, `ingress_stream`, `panel_*` from the
+  manifest.
+
 ## 1.0.2
 
 - **Fix: Home Assistant Ingress now works.** The Supervisor does not pass the

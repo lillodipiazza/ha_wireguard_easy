@@ -11,6 +11,13 @@ configuration:
     description: >-
       Porta UDP su cui WireGuard è in ascolto (default 51820).
       Configura il port-forwarding del router verso questo numero.
+  webui_port:
+    name: Porta Web UI
+    description: >-
+      Porta TCP dell'interfaccia web di wg-easy (default 51821).
+      Accessibile su http://&lt;IP_HA&gt;:&lt;porta&gt; o dietro un reverse proxy HTTPS.
+      Non compatibile con Ingress: wg-easy è una SPA con asset a percorso
+      assoluto, quindi la UI va esposta direttamente su questa porta.
   username:
     name: Nome utente admin
     description: >-
@@ -44,7 +51,8 @@ configuration:
     description: >-
       Disabilita il supporto IPv6 (interfaccia e regole firewall).
   insecure:
-    name: Consenti HTTP
+    name: Consenti accesso HTTP
     description: >-
-      Permetti l'accesso alla UI tramite HTTP invece di HTTPS
-      (in genere non necessario con Ingress).
+      Permetti il cookie di login su HTTP (necessario per l'accesso diretto
+      http://&lt;IP_HA&gt;:&lt;porta&gt;). Imposta su 'false' SOLO se la UI è
+      servita dietro un reverse proxy HTTPS.
