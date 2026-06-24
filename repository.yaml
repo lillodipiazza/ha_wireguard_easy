@@ -1,0 +1,14 @@
+---
+## Home Assistant repository metadata.
+##
+## This file is REQUIRED at the root of any custom Home Assistant
+## repository. Without it the Supervisor refuses the repo with the
+## error "... is not a valid app repository".
+##
+## Schema (from HA Supervisor store/validate.py):
+##   name:       (required) display name of the repository
+##   url:        (optional) project / maintainer URL
+##   maintainer: (optional) maintainer string
+name: WireGuard Easy (wg-easy)
+url: https://github.com/lillodipiazza/ha_wireguard_easy
+maintainer: lillodipiazza
